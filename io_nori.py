@@ -7,7 +7,6 @@ bl_info = {
     "description": "Export Nori scenes format (.xml)",
     "warning": "",
     "wiki_url": "",
-    "support": "TESTING",
     "category": "Export"}
 
 import bpy, os, math, shutil
