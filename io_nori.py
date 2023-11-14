@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Export Nori scenes format",
-    "author": "Adrien Gruson, Philipp Lindenberger",
-    "version": (0, 2),
+    "author": "Adrien Gruson, Philipp Lindenberger, Darío Marcos",
+    "version": (0, 3),
     "blender": (2, 80, 0),
     "location": "File > Export > Nori exporter (.xml)",
     "description": "Export Nori scenes format (.xml)",
@@ -12,8 +12,8 @@ bl_info = {
 import bpy, os, math, shutil
 from mathutils import Matrix, Vector, Color
 from xml.dom.minidom import Document
-import io_scene_obj.export_obj
-from io_scene_obj.export_obj import name_compat
+import io_export_obj
+from io_export_obj import name_compat
 from bpy_extras import io_utils, node_shader_utils
 import bmesh
 from bpy_extras.wm_utils.progress_report import (
@@ -325,7 +325,7 @@ class NoriWriter:
 
         # We use the official .obj export scripts, modified to our needs
         progress.enter_substeps(1)
-        io_scene_obj.export_obj.write_file(self.workingDir+"/meshes/"+fileObjPath, [mesh], self.depsgraph, self.scene, 
+        io_export_obj.write_file(self.workingDir+"/meshes/"+fileObjPath, [mesh], self.depsgraph, self.scene, 
                     progress=progress,
                     EXPORT_NORMALS=True,
                     EXPORT_UV=True,
