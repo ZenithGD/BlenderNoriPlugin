@@ -37,4 +37,4 @@ Nori only accepts 1/2/4/8-bit PNG textures, so you will have to convert them to 
 
 > The UV mappings are mirrored! What do I do?
 
-This is a known issue but I haven't found a solution yet. As a workaround, you can just mirror the texture on the X or Y axis (you'll unfortunately have to find which axis is the correct one by yourself for now) and it will magically work :)
+This is a known issue but I haven't found a solution yet, but from what I know, it probably comes from Blender, which flips the UVs. As a workaround, you can flip the UVs manually in Blender in order to fit the texture correctly.
