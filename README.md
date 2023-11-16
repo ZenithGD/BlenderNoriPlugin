@@ -1,10 +1,10 @@
 # BlenderNoriPlugin
 Export blender scenes to the [Nori educational raytracer](https://github.com/wjakob/nori). Proposed and used by many in the [Computer Graphics course at ETH Zurich, Fall 2020](https://cgl.ethz.ch/teaching/cg20/home.php).
 
-This is an extension and partial reimplementation to the [official Nori plugin](https://github.com/wjakob/nori/tree/master/ext/plugin) for Blender 2.80+ (tested on 2.90).
+This was originally an extension and partial reimplementation to the [official Nori plugin](https://github.com/wjakob/nori/tree/master/ext/plugin) for Blender 2.80+ (tested on 2.90). Now, it has been adapted for modern versions of Blender (4.0), which introduced many breaking changes in the scripting API.
 
 ## Installation
-To use it, copy the file 'io_nori.py' into the addons/ folder of your blender installation. Then, go to Edit -> Preferences -> Add-ons -> Testing, and enable "Export Nori scenes format.". Then, you can export your scene from File -> Export -> Export Nori scenes... .
+To use it, copy the folder 'io_nori' into the addons/ folder of your blender installation. Then, go to Edit -> Preferences -> Add-ons, and enable "Export Nori scenes format.". Then, you can export your scene from File -> Export -> Export Nori scenes... .
 
 ## Notes
 
@@ -25,3 +25,11 @@ To use it, copy the file 'io_nori.py' into the addons/ folder of your blender in
 
 ## Disclaimer
 Note that the Plugin is in an early stage and thus might have its problems/limitations. I would be happy to hear your feedback, so we could improve this together. I hope it helps someone in their final projects!
+
+## FAQ
+> The Nori description doesn't work!
+Note that this plugin creates the skeleton for the Nori scene description, but you will have to tweak some things yourself!
+> The description works, but Nori throws an exception while reading LDR textures!
+Nori only accepts 1/2/4/8-bit PNG textures, so you will have to convert them to this format first.
+> The UV mappings are mirrored! What do I do?
+This is a known issue but I haven't found a solution yet. As a workaround, you can just mirror the texture on the X or Y axis (you'll unfortunately have to find which axis is the correct one by yourself for now) and it will magically work :)
