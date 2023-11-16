@@ -28,8 +28,13 @@ Note that the Plugin is in an early stage and thus might have its problems/limit
 
 ## FAQ
 > The Nori description doesn't work!
+
 Note that this plugin creates the skeleton for the Nori scene description, but you will have to tweak some things yourself!
+
 > The description works, but Nori throws an exception while reading LDR textures!
+
 Nori only accepts 1/2/4/8-bit PNG textures, so you will have to convert them to this format first.
+
 > The UV mappings are mirrored! What do I do?
+
 This is a known issue but I haven't found a solution yet. As a workaround, you can just mirror the texture on the X or Y axis (you'll unfortunately have to find which axis is the correct one by yourself for now) and it will magically work :)
