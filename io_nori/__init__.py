@@ -26,7 +26,7 @@ from bpy_extras.wm_utils.progress_report import (
     ProgressReportSubstep,
 )
 
-from .obj_writer import write_obj
+from .obj_writer import *
 
 # -----------------------------------------------------------------------------
 # Module-level Shared State
