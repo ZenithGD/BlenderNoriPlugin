@@ -167,7 +167,9 @@ class NoriWriter:
         # and which distribution we will use
         ######################
         sampler = self.__createElement("sampler", {"type" : "independent" })
-        sampler.appendChild(self.__createElement("integer", {"name":"sampleCount", "value":str(nbSamples)}))
+
+        print("samples : ", bpy.context.scene.cycles.samples)
+        sampler.appendChild(self.__createElement("integer", {"name":"sampleCount", "value": str(bpy.context.scene.cycles.samples)}))
         self.scene.appendChild(sampler)
 
         ######################
@@ -545,7 +547,7 @@ class NoriExporter(Operator, ExportHelper):
         nori.setExportMeshesWorld(self.export_meshes_in_world)
         nori.export_triangular = self.export_meshes_triangular
         nori.export_textures = self.export_textures
-        nori.write(self.export_light, self.export_material_colors, self.nb_samples)
+        nori.write(self.export_light, self.export_material_colors, bpy.context.scene.cycles.samples)
         return {'FINISHED'}
 
     def invoke(self, context, event):
