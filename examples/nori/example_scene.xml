@@ -12,32 +12,26 @@
 		<integer name="height" value="1080"/>
 		<transform name="toWorld">
 			<scale value="1.000000 1.000000 -1.000000"/>
-			<matrix value="0.6859206557273865,-0.32401347160339355,0.6515582203865051,7.358891487121582,0.7276763319969177,0.305420845746994,-0.6141703724861145,-6.925790786743164,0.0,0.8953956365585327,0.44527140259742737,4.958309173583984,0.0,0.0,0.0,1.0"/>
+			<matrix value="0.6859206557273865,-0.32401347160339355,0.6515582203865051,9.26130485534668,0.7276763319969177,0.305420845746994,-0.6141703724861145,-8.739311218261719,0.0,0.8953956365585327,0.44527140259742737,7.603571891784668,0.0,0.0,0.0,1.0"/>
 		</transform>
 	</camera>
-	<emitter type="point">
-		<point name="position" value="4.076245,1.005454,5.903862"/>
-		<color name="power" value="1000.000000,1000.000000,1000.000000"/>
-	</emitter>
 	<mesh type="obj">
-		<string name="filename" value="meshes/Cube_Material.obj"/>
-		<bsdf type="disney" name="Material">
-			<texture type="image_texture" name="baseColor">
-				<string name="filename" value="C:/Users/darim/Downloads/texture.jpg"/>
+		<string name="filename" value="meshes/Plane_Material.004.obj"/>
+		<bsdf type="diffuse" name="Material.004">
+			<texture type="image_texture" name="albedo">
+				<string name="filename" value="C:/Users/darim/Downloads/apart.png"/>
 				<string name="interpolation" value="Linear"/>
 				<string name="extension" value="REPEAT"/>
 				<string name="projection" value="FLAT"/>
 			</texture>
-			<float name="metallic" value="0.000000"/>
-			<float name="subsurface" value="0.000000"/>
-			<float name="specular" value="0.500000"/>
-			<color name="specularTint" value="1.000000,1.000000,1.000000"/>
-			<float name="roughness" value="0.500000"/>
-			<float name="anisotropic" value="0.000000"/>
-			<float name="sheen" value="0.000000"/>
-			<color name="specularTint" value="1.000000,1.000000,1.000000"/>
-			<float name="clearcoat" value="0.000000"/>
-			<float name="clearcoatGloss" value="0.030000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Cube_Material.001.obj"/>
+		<bsdf type="dielectric" name="Material.001">
+			<color name="color" value="1.000000,1.000000,1.000000"/>
+			<float name="IOR" value="1.450000"/>
+			<float name="roughness" value="0.000000"/>
 		</bsdf>
 	</mesh>
 </scene>

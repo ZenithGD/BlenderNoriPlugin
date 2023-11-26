@@ -279,7 +279,8 @@ class NoriWriter:
             bsdfElement.appendChild(self.__createEntry("float", "roughness","%f" % glass.inputs["Roughness"].default_value))
         elif (glossy and exportMaterialColor):
             alpha = glossy.inputs["Roughness"].default_value
-            bsdfElement = self.__createElement("bsdf", {"type":"microfacet", "name" : slot.material.name})
+            # TODO: roughsubstrate is a specific microfacet model, allow changing material names
+            bsdfElement = self.__createElement("bsdf", {"type":"roughsubstrate", "name" : slot.material.name})
             bsdfElement.appendChild(self.__createColorOrTexture("kd", glossy.inputs["Color"]))
             bsdfElement.appendChild(self.__createEntry("float", "alpha","%f" % alpha))
         elif (diffuse and exportMaterialColor):
