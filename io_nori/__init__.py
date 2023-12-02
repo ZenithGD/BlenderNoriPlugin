@@ -86,7 +86,8 @@ class NoriWriter:
         self.filepath = filepath
         self.workingDir = os.path.dirname(self.filepath)
         self.export_textures = False
-
+        self.mesh_dir = "meshes"
+        
     ######################
     # tools private methods
     # (xml format)
@@ -110,7 +111,7 @@ class NoriWriter:
         try:
             if len(linked_nodes)> 0 and self.export_textures:
                 if (linked_nodes[0].from_node.bl_label == "Image Texture"):
-                    texture = self.__createElement("texture",{"type":"image_texture", "name":name})
+                    texture = self.__createElement("texture",{"type":"textmap", "name":name})
                     texture.appendChild(self.__createEntry("string","filename", linked_nodes[0].from_node.image.filepath.replace("\\","/")))
                     texture.appendChild(self.__createEntry("string","interpolation", linked_nodes[0].from_node.interpolation))
                     texture.appendChild(self.__createEntry("string","extension", linked_nodes[0].from_node.extension))
@@ -192,7 +193,7 @@ class NoriWriter:
                           if obj.type in {'LIGHT'} and obj.visible_get()]
             for source in sources:
                 if(source.data.type == "POINT"):
-                    pointLight = self.__createElement("emitter", {"type" : "point" })
+                    pointLight = self.__createElement("emitter", {"type" : "pointlight" })
                     pos = source.location
                     pointLight.appendChild(self.__createEntry("point", "position", "%f,%f,%f"%(pos.x,pos.y,pos.z)))
                     power = source.data.energy
@@ -200,7 +201,7 @@ class NoriWriter:
                     color[0] *=power
                     color[1] *=power
                     color[2] *=power
-                    pointLight.appendChild(self.__createEntry("color", "power", "%f,%f,%f"%(color[0], color[1], color[2])))
+                    pointLight.appendChild(self.__createEntry("color", "radiance", "%f,%f,%f"%(color[0], color[1], color[2])))
                     self.scene.appendChild(pointLight)
                 else:
                     self.verbose("WARN: Light source type (%s) is not supported" % source.data.type)
@@ -209,19 +210,32 @@ class NoriWriter:
         # 5) export all meshes
         ######################
         # create the directory for store the meshes
-        if not os.path.exists(self.workingDir+"/meshes"):
-                os.makedirs(self.workingDir+"/meshes")
+        if not os.path.exists(self.workingDir + "/" + self.mesh_dir):
+            os.makedirs(self.workingDir + "/" + self.mesh_dir)
 
         #io_scene_obj.export_obj.save(self.context, self.workingDir+"/all.obj")
 
         # export all of them
-        meshes = [obj for obj in self.context.scene.objects
+        meshes = [obj for obj in bpy.context.scene.objects
                       if obj.visible_get() and obj.type in SUPPORTED_OBJECT_TYPES]
         
         with ProgressReport(self.context.window_manager) as progress:
             progress.enter_substeps(len(meshes))
             for mesh in meshes:
-                self.write_mesh(mesh, exportLight, exportMaterialColor, progress)
+                obj_path = os.path.join(self.mesh_dir, mesh.name + '.obj')
+                self.write_mesh(mesh, obj_path, exportLight, exportMaterialColor, progress)
+
+                mesh.select_set(True)
+                # export selected object
+                bpy.ops.wm.obj_export(
+                    filepath=os.path.join(self.workingDir, obj_path),
+                    export_selected_objects=True,
+                    forward_axis="Y",
+                    up_axis="Z",
+                    apply_modifiers=True
+                )
+                mesh.select_set(False)
+
             progress.leave_substeps()
         ######################
         # 6) write the xml file
@@ -246,7 +260,7 @@ class NoriWriter:
     ######################
     def __createMeshEntry(self, filename, matrix):
         meshElement = self.__createElement("mesh", {"type" : "obj"})
-        meshElement.appendChild(self.__createElement("string", {"name":"filename","value":"meshes/"+filename}))
+        meshElement.appendChild(self.__createElement("string", {"name":"filename","value":filename}))
         if not self.export_meshes_world:
             meshElement.appendChild(self.__createTransform(matrix))
         return meshElement
@@ -291,6 +305,8 @@ class NoriWriter:
             spt = principled.inputs["Sheen Tint"].default_value
             sht = principled.inputs["Specular Tint"].default_value
             c = principled.inputs["Base Color"].default_value
+
+            # TODO: Based on the properties modified, infer which bsdf should it use
             bsdfElement = self.__createElement("bsdf", {"type":"disney", "name" : slot.material.name})
             bsdfElement.appendChild(self.__createColorOrTexture("baseColor", principled.inputs["Base Color"]))
             bsdfElement.appendChild(self.__createEntry("float", "metallic","%f" %(principled.inputs["Metallic"].default_value)))
@@ -314,12 +330,12 @@ class NoriWriter:
 
         return bsdfElement
 
-    def write_mesh(self,mesh, exportMeshLights, exportMaterialColor, progress):
+    def write_mesh(self,mesh, mesh_path, exportMeshLights, exportMaterialColor, progress):
         if mesh.type in SUPPORTED_OBJECT_TYPES and mesh.type != "EMPTY":
-            for meshEntry in self.write_mesh_objs(mesh, exportMeshLights, exportMaterialColor, progress):
+            for meshEntry in self.write_mesh_info(mesh, mesh_path, exportMeshLights, exportMaterialColor, progress):
                 self.scene.appendChild(meshEntry)
 
-    def write_mesh_objs(self, mesh, exportMeshLights, exportMaterialColor, progress):
+    def write_mesh_info(self, mesh, mesh_path, exportMeshLights, exportMaterialColor, progress):
 
         # We check if the object has any other instances, and if so create a temporary joined object.
         mesh, created_instance_ob = join_instances(self.context, mesh)
@@ -328,30 +344,9 @@ class NoriWriter:
 
         haveMaterial = (len(mesh.material_slots) != 0 and mesh.material_slots[0].name != '')
 
-        # export obj file base (vertex pos, normal and uv)
-        # but not the face data
-        fileObjPath = mesh.name+".obj"
-
         # write_file export by default meshes in world coordinates, we transform back to local coordinate.
         world_to_local = mesh.matrix_world.copy().inverted_safe()
 
-        # We use the official .obj export scripts, modified to our needs
-        progress.enter_substeps(1)
-        # io_export_obj.write_file(self.workingDir+"/meshes/"+fileObjPath, [mesh], self.depsgraph, self.scene, 
-        #             progress=progress,
-        #             EXPORT_NORMALS=True,
-        #             EXPORT_UV=True,
-        #             EXPORT_TRI=self.export_triangular,
-        #             EXPORT_GROUP_BY_MAT=True,
-        #             EXPORT_GROUP_BY_OB = False,
-        #             EXPORT_APPLY_MODIFIERS=True,
-        #             EXPORT_CURVE_AS_NURBS=True,
-        #             EXPORT_MTL=True,
-        #             EXPORT_KEEP_VERT_ORDER=False,
-        #             EXPORT_GLOBAL_MATRIX=world_to_local if not self.export_meshes_world else None)
-        print(mesh)
-        write_obj(mesh, self.workingDir+"/meshes/"+fileObjPath)
-        progress.leave_substeps()
         # if added_uv:
         #     mesh.data.uv_layers.remove(mesh.data.uv_layers['DefaultUvMap'])
         #     dg = bpy.context.evaluated_depsgraph_get()
@@ -360,7 +355,7 @@ class NoriWriter:
         listMeshXML = []
         if(not haveMaterial):
             # add default BSDF
-            meshElement = self.__createMeshEntry(fileObjPath, mesh.matrix_world)
+            meshElement = self.__createMeshEntry(mesh_path, mesh.matrix_world)
             bsdfElement = self.__createElement("bsdf", {"type":"diffuse"})
             bsdfElement.appendChild(self.__createEntry("color", "albedo", "0.75,0.75,0.75"))
             meshElement.appendChild(bsdfElement)
@@ -370,28 +365,10 @@ class NoriWriter:
                 slot = mesh.material_slots[id_mat]
                 self.verbose("MESH: "+mesh.name+" BSDF: "+slot.name)
 
-                # we create an new obj file and concatenate data files
-                fileObjMatPath = mesh.name+"_"+slot.name+".obj"
-                fileObj = open(self.workingDir+"/meshes/"+fileObjPath,"r")
-                fileObjMat = open(self.workingDir+"/meshes/"+fileObjMatPath,"w")
-                
-                # We only take faces that are associated to this material
-                do_copy = True
-                for line in fileObj:
-                    if (line.startswith("g")):
-                        if not line.startswith("g " + mesh.name+"_"+mesh.data.name+"_"+slot.name):
-                            do_copy=False
-                        else:
-                            do_copy=True
-                    if (do_copy):
-                        fileObjMat.write(line)
-
                 # We create xml related entry
-                meshElement = self.__createMeshEntry(fileObjMatPath, mesh.matrix_world)
+                meshElement = self.__createMeshEntry(mesh_path, mesh.matrix_world)
                 meshElement.appendChild(self.__createBSDFEntry(slot, exportMaterialColor))
 
-                fileObjMat.close()
-                fileObj.close()
                 # Check for emissive surfaces
                 node_tree = slot.material.node_tree
 
@@ -413,10 +390,6 @@ class NoriWriter:
                     meshElement.appendChild(areaLight)
 
                 listMeshXML.append(meshElement)
-
-            # Clean temporal obj file: outcommented since the combined and grouped output might be usable
-            if len(mesh.material_slots) <= 1:
-               os.remove(self.workingDir+"/meshes/"+fileObjPath)
 
         # free the memory
         # bpy.data.meshes.remove(mesh.data)
@@ -539,8 +512,6 @@ class NoriExporter(Operator, ExportHelper):
     nb_samples = IntProperty(name="Numbers of camera rays",
                     description="Number of camera ray",
                     default=32)
-
-    
     
 
     def execute(self, context):

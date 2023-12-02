@@ -22,12 +22,13 @@ def write_obj(mesh : bpy.types.Object, path : str, store_normals : bool = False)
             v_w = mesh_w_matrix @ v.co
             f.write("v %.4f %.4f %.4f\n" % (v_w[0], v_w[1], v_w[2]))
 
-        vertex_uvs = {}
         if mesh_uv_layer is not None:
             for i in range(len(mesh_uv_layer.data)):
                 f.write("vt %.6f %.6f\n" % (mesh_uv_layer.data[i].uv[0], mesh_uv_layer.data[i].uv[1]))
             f.write("\n")
 
+        # TODO: this is very inefficient because of the way that blender stores the UVs.
+        # exploit point position to reduce the amount of vertex coordinates
         uv_idx = 1
         for p in mesh_obj.polygons:
             f.write("f")
