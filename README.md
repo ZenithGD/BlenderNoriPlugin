@@ -1,5 +1,5 @@
 # BlenderNoriPlugin
-Export blender scenes to the [Nori educational raytracer](https://github.com/wjakob/nori). Proposed and used by many in the [Computer Graphics course at ETH Zurich, Fall 2020](https://cgl.ethz.ch/teaching/cg20/home.php).
+Export blender scenes to the [Nori educational raytracer](https://github.com/wjakob/nori). Proposed and used by many in the [Computer Graphics course at ETH Zurich, Fall 2020](https://cgl.ethz.ch/teaching/cg20/home.php), and more recently, in the [Modelling and Simulation of Appearance course at Universidad de Zaragoza](http://webdiis.unizar.es/~amunoz/es/render_cgr.html)
 
 This was originally an extension and partial reimplementation to the [official Nori plugin](https://github.com/wjakob/nori/tree/master/ext/plugin) for Blender 2.80+ (tested on 2.90). Now, it has been adapted for modern versions of Blender (4.0), which introduced many breaking changes in the scripting API.
 
