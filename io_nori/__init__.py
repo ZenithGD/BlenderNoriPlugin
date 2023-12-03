@@ -87,6 +87,8 @@ class NoriWriter:
         self.workingDir = os.path.dirname(self.filepath)
         self.export_textures = False
         self.mesh_dir = "meshes"
+        self.texture_dir = "textures"
+        self.support_disney = False
         
     ######################
     # tools private methods
@@ -111,15 +113,24 @@ class NoriWriter:
         try:
             if len(linked_nodes)> 0 and self.export_textures:
                 if (linked_nodes[0].from_node.bl_label == "Image Texture"):
+                    # get path
+                    texture_path = os.path.realpath(bpy.path.abspath(linked_nodes[0].from_node.image.filepath.strip()))
+                    texture_file = self.texture_dir + "/" + os.path.basename(texture_path)
+                    texture_destination = self.workingDir + "/" + texture_file
+                    print(texture_path)
+
+                    # copy texture to textures folder
+                    shutil.copy(texture_path, texture_destination)
                     texture = self.__createElement("texture",{"type":"textmap", "name":name})
-                    texture.appendChild(self.__createEntry("string","filename", linked_nodes[0].from_node.image.filepath.replace("\\","/")))
+                    texture.appendChild(self.__createEntry("string","filename", texture_file))
                     texture.appendChild(self.__createEntry("string","interpolation", linked_nodes[0].from_node.interpolation))
                     texture.appendChild(self.__createEntry("string","extension", linked_nodes[0].from_node.extension))
                     texture.appendChild(self.__createEntry("string","projection", linked_nodes[0].from_node.projection))
                     color_entry = texture
-        except:
+        except Exception as e:
             # To be safe
-            self.verbose("No Suitable texture found. Return default color.")
+            self.verbose("Exception caught! returning default colour")
+            self.verbose("Reason: " + str(e))
         return color_entry
 
     def __createTransform(self, mat, el = None, export_meshes_world = False):
@@ -213,6 +224,9 @@ class NoriWriter:
         if not os.path.exists(self.workingDir + "/" + self.mesh_dir):
             os.makedirs(self.workingDir + "/" + self.mesh_dir)
 
+        if not os.path.exists(self.workingDir + "/" + self.texture_dir):
+            os.makedirs(self.workingDir + "/" + self.texture_dir)
+
         #io_scene_obj.export_obj.save(self.context, self.workingDir+"/all.obj")
 
         # export all of them
@@ -223,7 +237,7 @@ class NoriWriter:
             progress.enter_substeps(len(meshes))
             for mesh in meshes:
                 obj_path = os.path.join(self.mesh_dir, mesh.name + '.obj')
-                self.write_mesh(mesh, obj_path, exportLight, exportMaterialColor, progress)
+                self.write_mesh(mesh, obj_path.replace("\\", "/"), exportLight, exportMaterialColor, progress)
 
                 mesh.select_set(True)
                 # export selected object
@@ -237,6 +251,31 @@ class NoriWriter:
                 mesh.select_set(False)
 
             progress.leave_substeps()
+
+        ######################
+        # 6) check if it has an environment map
+        if "Environment Texture" in bpy.data.worlds["World"].node_tree.nodes:
+            env_name = bpy.data.worlds["World"].node_tree.nodes["Environment Texture"]
+            # get basename, copy and add entry
+            env_source = os.path.realpath(bpy.path.abspath(env_name.image.filepath.strip()))
+
+            env_file = self.texture_dir + "/" + os.path.basename(env_source)
+            env_destination = self.workingDir + "/" + env_file
+
+            shutil.copy(env_source, env_destination)
+
+            # write data
+            strength = bpy.data.worlds["World"].node_tree.nodes["Background"].inputs[1].default_value * 50
+
+            env_element = self.__createElement("emitter", {"type" : "environment" })
+            env_element.appendChild(self.__createEntry("string", "filename", env_file))
+            env_element.appendChild(self.__createEntry("float", "rotate", "180"))
+            env_element.appendChild(self.__createEntry("color","radiance", f"{strength}, {strength}, {strength}"))
+
+            self.scene.appendChild(env_element)
+
+        ######################
+
         ######################
         # 6) write the xml file
         ######################
@@ -294,8 +333,8 @@ class NoriWriter:
         elif (glossy and exportMaterialColor):
             alpha = glossy.inputs["Roughness"].default_value
             # TODO: roughsubstrate is a specific microfacet model, allow changing material names
-            bsdfElement = self.__createElement("bsdf", {"type":"roughsubstrate", "name" : slot.material.name})
-            bsdfElement.appendChild(self.__createColorOrTexture("kd", glossy.inputs["Color"]))
+            bsdfElement = self.__createElement("bsdf", {"type":"roughconductor", "name" : slot.material.name})
+            bsdfElement.appendChild(self.__createColorOrTexture("R0", glossy.inputs["Color"]))
             bsdfElement.appendChild(self.__createEntry("float", "alpha","%f" % alpha))
         elif (diffuse and exportMaterialColor):
             bsdfElement = self.__createElement("bsdf", {"type":"diffuse", "name" : slot.material.name})
@@ -306,20 +345,25 @@ class NoriWriter:
             sht = principled.inputs["Specular Tint"].default_value
             c = principled.inputs["Base Color"].default_value
 
-            # TODO: Based on the properties modified, infer which bsdf should it use
-            bsdfElement = self.__createElement("bsdf", {"type":"disney", "name" : slot.material.name})
-            bsdfElement.appendChild(self.__createColorOrTexture("baseColor", principled.inputs["Base Color"]))
-            bsdfElement.appendChild(self.__createEntry("float", "metallic","%f" %(principled.inputs["Metallic"].default_value)))
-            bsdfElement.appendChild(self.__createEntry("float", "subsurface","%f" %(principled.inputs["Subsurface Weight"].default_value)))
-            bsdfElement.appendChild(self.__createEntry("float", "specular", "%f" %(principled.inputs["Specular IOR Level"].default_value)))
-            bsdfElement.appendChild(self.__createEntry("color", "specularTint", "%f,%f,%f" %(spt[0],spt[1],spt[2])))
-            bsdfElement.appendChild(self.__createEntry("float", "roughness","%f" %(principled.inputs["Roughness"].default_value)))
-            bsdfElement.appendChild(self.__createEntry("float", "anisotropic","%f" %(principled.inputs["Anisotropic"].default_value)))
-            bsdfElement.appendChild(self.__createEntry("float", "sheen","%f" %(principled.inputs["Sheen Weight"].default_value)))
-            bsdfElement.appendChild(self.__createEntry("color", "specularTint", "%f,%f,%f" %(sht[0],sht[1],sht[2])))
-            bsdfElement.appendChild(self.__createEntry("float", "clearcoat","%f" %(principled.inputs["Coat Weight"].default_value)))
-            bsdfElement.appendChild(self.__createEntry("float", "clearcoatGloss","%f" %(principled.inputs["Coat Roughness"].default_value)))
-
+            if self.support_disney:
+                # TODO: Based on the properties modified, infer which bsdf should it use
+                bsdfElement = self.__createElement("bsdf", {"type":"disney", "name" : slot.material.name})
+                bsdfElement.appendChild(self.__createColorOrTexture("baseColor", principled.inputs["Base Color"]))
+                bsdfElement.appendChild(self.__createEntry("float", "metallic","%f" %(principled.inputs["Metallic"].default_value)))
+                bsdfElement.appendChild(self.__createEntry("float", "subsurface","%f" %(principled.inputs["Subsurface Weight"].default_value)))
+                bsdfElement.appendChild(self.__createEntry("float", "specular", "%f" %(principled.inputs["Specular IOR Level"].default_value)))
+                bsdfElement.appendChild(self.__createEntry("color", "specularTint", "%f,%f,%f" %(spt[0],spt[1],spt[2])))
+                bsdfElement.appendChild(self.__createEntry("float", "roughness","%f" %(principled.inputs["Roughness"].default_value)))
+                bsdfElement.appendChild(self.__createEntry("float", "anisotropic","%f" %(principled.inputs["Anisotropic"].default_value)))
+                bsdfElement.appendChild(self.__createEntry("float", "sheen","%f" %(principled.inputs["Sheen Weight"].default_value)))
+                bsdfElement.appendChild(self.__createEntry("color", "specularTint", "%f,%f,%f" %(sht[0],sht[1],sht[2])))
+                bsdfElement.appendChild(self.__createEntry("float", "clearcoat","%f" %(principled.inputs["Coat Weight"].default_value)))
+                bsdfElement.appendChild(self.__createEntry("float", "clearcoatGloss","%f" %(principled.inputs["Coat Roughness"].default_value)))
+            else:
+                # TODO: Based on the properties modified, infer which bsdf should it use
+                bsdfElement = self.__createElement("bsdf", {"type":"roughsubstrate", "name" : slot.material.name})
+                bsdfElement.appendChild(self.__createColorOrTexture("kd", principled.inputs["Base Color"]))
+                bsdfElement.appendChild(self.__createEntry("float", "alpha","%f" %(principled.inputs["Roughness"].default_value)))
 
         elif (specular and exportMaterialColor):
             bsdfElement = self.__createElement("bsdf", {"type":"mirror", "name" : slot.material.name})

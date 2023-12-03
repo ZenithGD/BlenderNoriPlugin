@@ -20,28 +20,19 @@
 		<color name="radiance" value="1000.000000,1000.000000,1000.000000"/>
 	</emitter>
 	<mesh type="obj">
-		<string name="filename" value="meshes\Cube.obj"/>
-		<bsdf type="disney" name="Material">
-			<texture type="textmap" name="baseColor">
-				<string name="filename" value="//../../../../../../../../Downloads/british-shorthair-abyssinian-kitten-wallpaper-cute-gray-kitten-6d33d5e6a2d6e722a356d74619ad5c4b.png"/>
+		<string name="filename" value="meshes/Cube.obj"/>
+		<bsdf type="roughsubstrate" name="Material">
+			<texture type="textmap" name="kd">
+				<string name="filename" value="textures/british-shorthair-abyssinian-kitten-wallpaper-cute-gray-kitten-6d33d5e6a2d6e722a356d74619ad5c4b.png"/>
 				<string name="interpolation" value="Linear"/>
 				<string name="extension" value="REPEAT"/>
 				<string name="projection" value="FLAT"/>
 			</texture>
-			<float name="metallic" value="0.000000"/>
-			<float name="subsurface" value="0.000000"/>
-			<float name="specular" value="0.500000"/>
-			<color name="specularTint" value="1.000000,1.000000,1.000000"/>
-			<float name="roughness" value="0.500000"/>
-			<float name="anisotropic" value="0.000000"/>
-			<float name="sheen" value="0.000000"/>
-			<color name="specularTint" value="1.000000,1.000000,1.000000"/>
-			<float name="clearcoat" value="0.000000"/>
-			<float name="clearcoatGloss" value="0.030000"/>
+			<float name="alpha" value="0.500000"/>
 		</bsdf>
 	</mesh>
 	<mesh type="obj">
-		<string name="filename" value="meshes\Suzanne.obj"/>
+		<string name="filename" value="meshes/Suzanne.obj"/>
 		<bsdf type="diffuse">
 			<color name="albedo" value="0.75,0.75,0.75"/>
 		</bsdf>
