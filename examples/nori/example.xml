@@ -1,0 +1,194 @@
+<?xml version="1.0" ?>
+<scene>
+	<integrator type="path_mis"/>
+	<sampler type="independent">
+		<integer name="sampleCount" value="4096"/>
+	</sampler>
+	<camera type="perspective">
+		<float name="fov" value="39.597755335771296"/>
+		<float name="nearClip" value="0.10000000149011612"/>
+		<float name="farClip" value="100.0"/>
+		<integer name="width" value="1920"/>
+		<integer name="height" value="1080"/>
+		<transform name="toWorld">
+			<scale value="1.000000 1.000000 -1.000000"/>
+			<matrix value="0.9995871186256409,-0.0036414761561900377,0.02850177511572838,0.19593149423599243,0.02866273745894432,0.19592049717903137,-0.9802008271217346,-10.014534950256348,-0.0020147040486335754,0.9806129932403564,0.19594398140907288,2.9762766361236572,0.0,0.0,0.0,1.0"/>
+		</transform>
+	</camera>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Plane.obj"/>
+		<bsdf type="roughsubstrate" name="Material.001">
+			<color name="kd" value="0.131455,0.143383,0.138698"/>
+			<float name="alpha" value="0.500000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.obj"/>
+		<bsdf type="roughsubstrate" name="Material.002">
+			<color name="kd" value="0.108604,0.371710,0.800458"/>
+			<float name="alpha" value="0.500000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.001.obj"/>
+		<bsdf type="roughsubstrate" name="Material.005">
+			<color name="kd" value="0.800266,0.001273,0.000000"/>
+			<float name="alpha" value="0.500000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.002.obj"/>
+		<bsdf type="dielectric" name="Material.004">
+			<color name="color" value="1.000000,1.000000,1.000000"/>
+			<float name="IOR" value="1.450000"/>
+			<float name="roughness" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.003.obj"/>
+		<bsdf type="roughsubstrate" name="Material.002">
+			<color name="kd" value="0.108604,0.371710,0.800458"/>
+			<float name="alpha" value="0.500000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.004.obj"/>
+		<bsdf type="dielectric" name="Material.004">
+			<color name="color" value="1.000000,1.000000,1.000000"/>
+			<float name="IOR" value="1.450000"/>
+			<float name="roughness" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.005.obj"/>
+		<bsdf type="roughsubstrate" name="Material.003">
+			<color name="kd" value="0.189749,0.800702,0.136505"/>
+			<float name="alpha" value="0.500000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.006.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75,0.75,0.75"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.007.obj"/>
+		<bsdf type="roughsubstrate" name="Material.003">
+			<color name="kd" value="0.189749,0.800702,0.136505"/>
+			<float name="alpha" value="0.500000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.008.obj"/>
+		<bsdf type="roughsubstrate" name="Material.005">
+			<color name="kd" value="0.800266,0.001273,0.000000"/>
+			<float name="alpha" value="0.500000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.009.obj"/>
+		<bsdf type="roughsubstrate" name="Material.002">
+			<color name="kd" value="0.108604,0.371710,0.800458"/>
+			<float name="alpha" value="0.500000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.010.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75,0.75,0.75"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.013.obj"/>
+		<bsdf type="dielectric" name="Material.004">
+			<color name="color" value="1.000000,1.000000,1.000000"/>
+			<float name="IOR" value="1.450000"/>
+			<float name="roughness" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.014.obj"/>
+		<bsdf type="roughsubstrate" name="Material.003">
+			<color name="kd" value="0.189749,0.800702,0.136505"/>
+			<float name="alpha" value="0.500000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.015.obj"/>
+		<bsdf type="roughsubstrate" name="Material.002">
+			<color name="kd" value="0.108604,0.371710,0.800458"/>
+			<float name="alpha" value="0.500000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.016.obj"/>
+		<bsdf type="roughsubstrate" name="Material.005">
+			<color name="kd" value="0.800266,0.001273,0.000000"/>
+			<float name="alpha" value="0.500000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.017.obj"/>
+		<bsdf type="dielectric" name="Material.004">
+			<color name="color" value="1.000000,1.000000,1.000000"/>
+			<float name="IOR" value="1.450000"/>
+			<float name="roughness" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.018.obj"/>
+		<bsdf type="roughsubstrate" name="Material.003">
+			<color name="kd" value="0.189749,0.800702,0.136505"/>
+			<float name="alpha" value="0.500000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.019.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75,0.75,0.75"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.020.obj"/>
+		<bsdf type="dielectric" name="Material.004">
+			<color name="color" value="1.000000,1.000000,1.000000"/>
+			<float name="IOR" value="1.450000"/>
+			<float name="roughness" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.021.obj"/>
+		<bsdf type="roughsubstrate" name="Material.005">
+			<color name="kd" value="0.800266,0.001273,0.000000"/>
+			<float name="alpha" value="0.500000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.022.obj"/>
+		<bsdf type="dielectric" name="Material.004">
+			<color name="color" value="1.000000,1.000000,1.000000"/>
+			<float name="IOR" value="1.450000"/>
+			<float name="roughness" value="0.000000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.023.obj"/>
+		<bsdf type="roughsubstrate" name="Material.002">
+			<color name="kd" value="0.108604,0.371710,0.800458"/>
+			<float name="alpha" value="0.500000"/>
+		</bsdf>
+	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="meshes/Sphere.024.obj"/>
+		<bsdf type="roughsubstrate" name="Material.003">
+			<color name="kd" value="0.189749,0.800702,0.136505"/>
+			<float name="alpha" value="0.500000"/>
+		</bsdf>
+	</mesh>
+	<emitter type="environment">
+		<string name="filename" value="textures/rural_asphalt_road_2k.exr"/>
+		<float name="rotate" value="180"/>
+		<color name="radiance" value="50.0, 50.0, 50.0"/>
+	</emitter>
+</scene>
