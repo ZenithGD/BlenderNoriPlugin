@@ -242,25 +242,26 @@ class NoriWriter:
 
         ######################
         # 6) check if it has an environment map
-        if "Environment Texture" in bpy.data.worlds["World"].node_tree.nodes:
-            env_name = bpy.data.worlds["World"].node_tree.nodes["Environment Texture"]
-            # get basename, copy and add entry
-            env_source = os.path.realpath(bpy.path.abspath(env_name.image.filepath.strip()))
+        if bpy.data.worlds["World"].node_tree:
+            if "Environment Texture" in bpy.data.worlds["World"].node_tree.nodes:
+                env_name = bpy.data.worlds["World"].node_tree.nodes["Environment Texture"]
+                # get basename, copy and add entry
+                env_source = os.path.realpath(bpy.path.abspath(env_name.image.filepath.strip()))
 
-            env_file = self.texture_dir + "/" + os.path.basename(env_source)
-            env_destination = self.workingDir + "/" + env_file
+                env_file = self.texture_dir + "/" + os.path.basename(env_source)
+                env_destination = self.workingDir + "/" + env_file
 
-            shutil.copy(env_source, env_destination)
+                shutil.copy(env_source, env_destination)
 
-            # write data
-            strength = bpy.data.worlds["World"].node_tree.nodes["Background"].inputs[1].default_value * 50
+                # write data
+                strength = bpy.data.worlds["World"].node_tree.nodes["Background"].inputs[1].default_value * 50
 
-            env_element = self.__createElement("emitter", {"type" : "environment" })
-            env_element.appendChild(self.__createEntry("string", "filename", env_file))
-            env_element.appendChild(self.__createEntry("float", "rotate", "180"))
-            env_element.appendChild(self.__createEntry("color","radiance", f"{strength}, {strength}, {strength}"))
+                env_element = self.__createElement("emitter", {"type" : "environment" })
+                env_element.appendChild(self.__createEntry("string", "filename", env_file))
+                env_element.appendChild(self.__createEntry("float", "rotate", "180"))
+                env_element.appendChild(self.__createEntry("color","radiance", f"{strength}, {strength}, {strength}"))
 
-            self.scene.appendChild(env_element)
+                self.scene.appendChild(env_element)
 
         ######################
 
